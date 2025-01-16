@@ -1,0 +1,10 @@
+*.db
+
+*.json
+
+__pycache__/
+*.py[cod]
+
+*.log
+
+.env
