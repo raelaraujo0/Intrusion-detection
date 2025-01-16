@@ -1,0 +1,12 @@
+import json
+import os
+
+def saveJsonLog(log_data, filename="scanlog.json"):
+    json_dir = "../json"
+    os.makedirs(json_dir, exist_ok=True)
+    
+    filepath = os.path.join(json_dir, filename)
+    
+    with open(filepath, "a") as json_file:
+        json.dump(log_data, json_file)
+        json_file.write("\n")
