@@ -7,17 +7,36 @@ from dbmanager import initDb, insert_scan_record
 from writelogjson import saveJsonLog
 import os
 
+def scan_ports(ip):
+    print(f"Scanning ports for IP: {ip}")
+    output = subprocess.run(
+        ["sudo", "nmap", "-p", "1-1024", ip],
+        #-p: range p as portas
+
+        capture_output = True
+    )
+    
+    if output.returncode == 0:
+        decoded_output = output.stdout.decode()
+        print("\nPort Scan Results:\n")
+        lines = decoded_output.splitlines()
+        for line in lines:
+            if line.startswith("PORT"):
+                print(f"{line}")
+            elif line.strip():
+                print(f"  {line.strip()}")
+    else:
+        print(f"Error scanning ports for {ip}")
 
 def scanNetwork(network_range, conn):
-    print(f"\n Scanning network: {network_range}")
-
+    print(f"\nScanning network: {network_range}")
+    
     output = subprocess.run(
         ["sudo", "nmap", "-v", "-sn", network_range, "-oX", "/tmp/scanlog.xml"],
         #-V:verbose, -sn:varredura de ping
-
-        capture_output = True
+        capture_output=True
     ) #executa o nmap p varrer a rede e salvar em XML
-
+    
     if output.returncode == 0:
         tree = etxml.parse("/tmp/scanlog.xml")
         root = tree.getroot()
@@ -31,9 +50,9 @@ def scanNetwork(network_range, conn):
                         mac = elem.attrib["addr"]
                         vendor = elem.attrib.get("vendor", "Unknown")
         #EXTRACAO
-
+            
             if ip != "Unknown" and mac != "Unknown":
-                print(f"Detected device - IP: {ip}, MAC: {mac}, Vendor: {vendor}")
+                print(f"\nDetected device - IP: {ip}, MAC: {mac}, Vendor: {vendor}")
                 insert_scan_record(conn, ip, mac, vendor, time.strftime('%d-%m-%Y %H:%M:%S'))
                 scan_data = {
                     "ip": ip,
@@ -43,15 +62,17 @@ def scanNetwork(network_range, conn):
                 }
                 saveJsonLog(scan_data)
                 
+                scan_ports(ip)
+                
 
 def hexit(signal, frame):
-    print("\n Stopping network scan. Exiting...")
+    print("\nStopping network scan. Exiting...")
     sys.exit(0)
     #interrupcao
 
 def main():
     if len(sys.argv) != 3:
-        print("\n Usage: sudo python3 detect.py <network_range> <database_path>\n")
+        print("\nUsage: sudo python3 detect.py <network_range> <database_path>\n")
         print("Example:")
         print("  sudo python3 detect.py 123.456.78.9/00 meinedatenbank.db\n")
         sys.exit(1)
@@ -59,10 +80,10 @@ def main():
 
     network_range = sys.argv[1]
     db_name = sys.argv[2]
-    #pega os argumentos do comando e inicializa conexao com db
-
+    
     db_path = os.path.join("../databases", db_name)
     conn = initDb(db_path)
+    #pega os argumentos do comando e inicializa conexao com db
 
     signal.signal(signal.SIGINT, hexit)
     
@@ -72,9 +93,9 @@ def main():
             time.sleep(2)
 
     except Exception as e:
-        print(f"\n Error: {e}")
+        print(f"\nError: {e}")
     finally:
-        print("\n Saving data to the database")
+        print("\nSaving data to the database")
         conn.close()
 
 if __name__ == "__main__":
