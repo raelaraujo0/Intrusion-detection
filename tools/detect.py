@@ -32,8 +32,8 @@ def scanNetwork(network_range, conn):
     print(f"\nScanning network: {network_range}")
     
     output = subprocess.run(
-        ["sudo", "nmap", "-v", "-sn", network_range, "-oX", "/tmp/scanlog.xml"],
-        #-V:verbose, -sn:varredura de ping
+        ["nmap", "-v", "-sS", network_range, "-oX", "/tmp/scanlog.xml"],
+        #-V:verbose
         capture_output=True
     ) #executa o nmap p varrer a rede e salvar em XML
     
@@ -64,7 +64,7 @@ def scanNetwork(network_range, conn):
                 
                 scan_ports(ip)
                 
-
+                
 def hexit(signal, frame):
     print("\nStopping network scan. Exiting...")
     sys.exit(0)

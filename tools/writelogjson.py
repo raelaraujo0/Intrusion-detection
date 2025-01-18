@@ -8,5 +8,5 @@ def saveJsonLog(log_data, filename="scanlog.json"):
     filepath = os.path.join(json_dir, filename)
     
     with open(filepath, "a") as json_file:
-        json.dump(log_data, json_file)
-        json_file.write("\n")
+        json_file.write(json.dumps(log_data, indent=4))
+        json_file.write(",\n")
