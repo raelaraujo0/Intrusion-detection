@@ -3,8 +3,8 @@ import time
 import subprocess
 import xml.etree.ElementTree as etxml
 import signal
-from dbmanager import initDb, insert_scan_record
-from writelogjson import saveJsonLog
+from dbmanager import init_Db, isner_Scan_Record
+from writelogjson import save_Json_Log
 import os
 
 def scan_ports(ip):
@@ -29,6 +29,7 @@ def scan_ports(ip):
         print(f"Error scanning ports for {ip}")
 
 def scanNetwork(network_range, conn):
+    print("\n==============================================================")
     print(f"\nScanning network: {network_range}")
     
     output = subprocess.run(
@@ -53,14 +54,14 @@ def scanNetwork(network_range, conn):
             
             if ip != "Unknown" and mac != "Unknown":
                 print(f"\nDetected device - IP: {ip}, MAC: {mac}, Vendor: {vendor}")
-                insert_scan_record(conn, ip, mac, vendor, time.strftime('%d-%m-%Y %H:%M:%S'))
+                isner_Scan_Record(conn, ip, mac, vendor, time.strftime('%d-%m-%Y %H:%M:%S'))
                 scan_data = {
                     "ip": ip,
                     "mac": mac,
                     "vendor": vendor,
                     "timestamp": time.strftime('%d-%m-%Y %H:%M:%S')
                 }
-                saveJsonLog(scan_data)
+                save_Json_Log(scan_data)
                 
                 scan_ports(ip)
                 
@@ -82,7 +83,7 @@ def main():
     db_name = sys.argv[2]
     
     db_path = os.path.join("../databases", db_name)
-    conn = initDb(db_path)
+    conn = init_Db(db_path)
     #pega os argumentos do comando e inicializa conexao com db
 
     signal.signal(signal.SIGINT, hexit)
@@ -90,7 +91,7 @@ def main():
     try:
         while True:
             scanNetwork(network_range, conn)
-            time.sleep(2)
+            time.sleep(1)
 
     except Exception as e:
         print(f"\nError: {e}")

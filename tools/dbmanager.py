@@ -1,6 +1,6 @@
 import sqlite3
 
-def initDb(db_path):
+def init_Db(db_path):
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
     cursor.execute('''
@@ -24,7 +24,7 @@ def initDb(db_path):
     return conn  
 
 
-def insert_scan_record(conn, ip, mac, vendor, day_n_hour):
+def isner_Scan_Record(conn, ip, mac, vendor, day_n_hour):
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM scan_records WHERE ip = ?", (ip,))
     if cursor.fetchone() is None:

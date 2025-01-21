@@ -1,7 +1,7 @@
 import json
 import os
 
-def saveJsonLog(log_data, filename="scanlog.json"):
+def save_Json_Log(log_data, filename="scanlog.json"):
     json_dir = "../json"
     os.makedirs(json_dir, exist_ok=True)
     
