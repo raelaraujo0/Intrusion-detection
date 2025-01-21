@@ -14,6 +14,16 @@ def init_Db(db_path):
     ''')
 
     cursor.execute('''
+        CREATE TABLE IF NOT EXISTS port_records (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            ip TEXT NOT NULL,
+            port INTEGER NOT NULL,
+            risk_level TEXT NOT NULL,
+            FOREIGN KEY (ip) REFERENCES scan_records (ip)
+        )
+    ''')
+
+    cursor.execute('''
         CREATE TABLE IF NOT EXISTS blacklist (
             mac TEXT PRIMARY KEY,
             description TEXT
@@ -21,7 +31,8 @@ def init_Db(db_path):
     ''')
 
     conn.commit()
-    return conn  
+    return conn
+
 
 
 def isner_Scan_Record(conn, ip, mac, vendor, day_n_hour):
