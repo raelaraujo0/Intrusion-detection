@@ -8,15 +8,27 @@ from writelogjson import save_Json_Log
 import os
 
 port_risks = {
-    'high': [22, 23, 445, 3389],
-    'medium': [80, 443, 3306],
-    'low': [631, 9100]
+    21: {"service": "FTP", "risk": "Medium"},
+    22: {"service": "SSH", "risk": "Medium"}, 
+    23: {"service": "Telnet", "risk": "High"},  
+    25: {"service": "SMTP", "risk": "Medium"}, 
+    53: {"service": "DNS", "risk": "Medium"},  
+    80: {"service": "HTTP", "risk": "Medium"}, 
+    110: {"service": "POP3", "risk": "High"}, 
+    143: {"service": "IMAP", "risk": "High"}, 
+    443: {"service": "HTTPS", "risk": "Low"},
+    445: {"service": "SMB", "risk": "High"},  
+    3306: {"service": "MySQL", "risk": "Medium"}, 
+    3389: {"service": "RDP", "risk": "High"}, 
+    8080: {"service": "HTTP-Proxy", "risk": "Medium"},
+    8443: {"service": "HTTPS-Alt", "risk": "Low"},
+    5900: {"service": "VNC", "risk": "High"},
 }
 
 def classify_port(port):
     for risk, ports in port_risks.items():
-        if port in ports:
-            return risk
+        if port in port_risks:
+            return port_risks[port]["risk"]
     return 'unknown'
 
 def scan_ports(ip, conn):
