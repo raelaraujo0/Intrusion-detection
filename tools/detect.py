@@ -36,7 +36,6 @@ def scan_ports(ip, conn):
     output = subprocess.run(
         ["sudo", "nmap", "-p", "1-1024", ip],
         capture_output=True,
-        text=True,
     )
 
     if output.returncode == 0:
@@ -45,7 +44,6 @@ def scan_ports(ip, conn):
         lines = decoded_output.splitlines()
         skip_line = False
         for line in lines:
-            # Ignorar as linhas de cabeçalho do Nmap
             if line.startswith("Starting Nmap"):
                 skip_line = True
                 continue
@@ -74,7 +72,6 @@ def scanNetwork(network_range, conn):
     output = subprocess.run(
         ["nmap", "-F", "-oX", "/tmp/scanlog.xml", network_range],
         capture_output=True,
-        timeout=120  # Timeout de 120 segundos
     )
     
     if output.returncode == 0:
@@ -92,7 +89,7 @@ def scanNetwork(network_range, conn):
                         vendor = elem.attrib.get("vendor", "Unknown")
 
             if ip != "Unknown" and mac != "Unknown" and ip not in scanned_ips:
-                scanned_ips.add(ip)  # Marcar IP como escaneado
+                scanned_ips.add(ip) 
                 print(f"\nDetected device - IP: {ip}, MAC: {mac}, Vendor: {vendor}")
                 isner_Scan_Record(conn, ip, mac, vendor, time.strftime('%d-%m-%Y %H:%M:%S'))
                 scan_data = {
